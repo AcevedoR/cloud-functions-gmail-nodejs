@@ -9,7 +9,7 @@
     "url": "https://github.com/GoogleCloudPlatform/cloud-functions-gmail-nodejs.git"
   },
   "engines": {
-    "node": ">=8.13.0"
+    "node": ">=14.0"
   },
   "scripts": {
     "fix": "semistandard --fix",

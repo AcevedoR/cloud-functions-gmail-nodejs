@@ -15,10 +15,9 @@
 
 'use strict';
 
-const google = require('googleapis');
+var {google} = require('googleapis');
 const gmail = google.gmail('v1');
 const querystring = require('querystring');
-const pify = require('pify');
 const config = require('./config');
 const oauth = require('./lib/oauth');
 const helpers = require('./lib/helpers');
@@ -31,7 +30,7 @@ const helpers = require('./lib/helpers');
 exports.oauth2init = (req, res) => {
   // Define OAuth2 scopes
   const scopes = [
-    'https://www.googleapis.com/auth/gmail.modify'
+    'https://www.googleapis.com/auth/gmail.readonly'
   ];
 
   // Generate + redirect to OAuth2 consent form URL
@@ -96,7 +95,7 @@ exports.initWatch = (req, res) => {
   return oauth.fetchToken(email)
     .then(() => {
       // Initialize a watch
-      return pify(gmail.users.watch)({
+      gmail.users.watch({
         auth: oauth.client,
         userId: 'me',
         resource: {
@@ -124,23 +123,15 @@ exports.initWatch = (req, res) => {
 /**
 * Process new messages as they are received
 */
-exports.onNewMessage = (event) => {
+exports.onNewMessage = (message, context) => {
   // Parse the Pub/Sub message
-  const dataStr = Buffer.from(event.data.data, 'base64').toString('ascii');
+  const dataStr = Buffer.from(message.data, 'base64').toString();
   const dataObj = JSON.parse(dataStr);
 
   return oauth.fetchToken(dataObj.emailAddress)
-    .then(helpers.listMessageIds)
-    .then(res => helpers.getMessageById(res.messages[0].id)) // Most recent message
-    .then(msg => Promise.all([msg, helpers.getAllImages(msg)]))
-    .then(([msg, images]) => Promise.all([msg, helpers.getImageLabels(images)]))
-    .then(([msg, labels]) => {
-      if (!labels.includes('bird')) {
-        throw new Error(config.NO_LABEL_MATCH); // Exit promise chain
-      }
-
-      return helpers.labelMessage(msg.id, ['STARRED']);
-    })
+    .then(() => helpers.listMessageIds())
+    .then(res => helpers.getMessageById(res.data.messages[0].id)) // TODO: foreach
+    .then(res => console.log(res))
     .catch((err) => {
       // Handle unexpected errors
       if (!err.message || err.message !== config.NO_LABEL_MATCH) {

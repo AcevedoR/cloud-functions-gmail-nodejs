@@ -1,5 +1,5 @@
 {
-  "GCF_REGION": "YOUR_GCF_REGION",
-  "GCLOUD_PROJECT": "YOUR_GCLOUD_PROJECT_ID",
-  "TOPIC_ID": "YOUR_PUBSUB_TOPIC"
+  "GCF_REGION": "europe-west1",
+  "GCLOUD_PROJECT": "first-planet-316414",
+  "TOPIC_ID": "topic1"
 }

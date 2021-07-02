@@ -1,3 +1,6 @@
+# Fork
+This fork upgrade the project with Node 14 and without Pify 
+
 # Gmail + GCF intelligence demo
 
 This repository demonstrates how to write custom mail processing logic for Gmail using the [Gmail API][gmail] and [Cloud Functions][gcf]. See the [blog post][blog] for more information.
